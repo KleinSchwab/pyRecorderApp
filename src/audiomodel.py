@@ -201,7 +201,6 @@ class AudioRecorder:
         self._rec = True
         self._rectime += 0.0
         if not self._playback:
-            print(self.inputdevice)
             self._input_stream = sd.InputStream(device=self.device_id, channels=self._channels,
                                                 blocksize=self._block_size,
                                                 samplerate=self._samplerate, callback=self._record_callback)

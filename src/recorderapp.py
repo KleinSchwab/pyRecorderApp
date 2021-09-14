@@ -243,7 +243,7 @@ class RecorderApp:
 
 
 def main():
-    recorder_app = RecorderApp(30)
+    recorder_app = RecorderApp(t_freq=.03, device_id=0, block_len=.01)
 
 
 if __name__ == "__main__":
