@@ -1,16 +1,16 @@
-import time
 import datetime
-import math
-
-import numpy as np
+import time
+import tkinter as tk
 from pathlib import Path
+from tkinter import filedialog
+
+import math
 import matplotlib.pyplot as plt
+import numpy as np
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
-import tkinter as tk
-from tkinter import filedialog
-from audio.utils import BlitManager
-from audio.audiomodel import AudioRecorder
+from src.audiomodel import AudioRecorder
+from src.utils import BlitManager
 
 
 class RecorderApp:
@@ -29,12 +29,12 @@ class RecorderApp:
                             length of a recorded audi block in seconds
                             shorter audio block yield faster response (but require more CPU)
         """
-        self.t_freq = int(t_freq*1000)
+        self.t_freq = int(t_freq * 1000)
         self.dt_last_update = 0
         self.ap_data_sr = 1  # internal variable for scaling
         self.ap_plotting = True  # enable/disable plotting
         # create AudiRecorder Model
-        #ToDo: setting for audio recorder
+        # ToDo: setting for audio recorder
         self.audio_recorder = AudioRecorder(device_id=device_id, playback=False, max_memeory=1000000, partition=False,
                                             block_len=block_len)
 
@@ -74,7 +74,6 @@ class RecorderApp:
         self.control_frame = None
         self.plot_frame = None
         self.control_frame_grid = None
-
 
     def _build_view(self):
         """ Builds the main view and sets up the GUI elements. """
@@ -139,19 +138,19 @@ class RecorderApp:
         mdata = self.audio_recorder.get_metadata()
         # calculate the downsampling of data for faster display frequency
         self.ap_data_sr = max(1, round(self.ap_data_sr * (width - self.control_frame.winfo_width()) /
-                                  math.floor(mdata["blocksize"])))
+                                       math.floor(mdata["blocksize"])))
 
         x = np.linspace(0, mdata["blocklength"], mdata["blocksize"])[::self.ap_data_sr]
-        (self.ap_ln,) = self.ap_ax.plot(x, np.zeros_like(x), animated=True, linewidth=2.2*self.ui_scalefactor)
+        (self.ap_ln,) = self.ap_ax.plot(x, np.zeros_like(x), animated=True, linewidth=2.2 * self.ui_scalefactor)
         self.ap_ax.set_xlim([0.0, mdata["blocklength"]])
         self.ap_ax.set_ylim([-1.0, 1.0])
         self.ap_ax.grid(linestyle='--', linewidth=0.5)
-        self.ap_ax.set_title(label="Last Recorded Audio Block", fontsize=28*self.ui_scalefactor, fontweight='bold')
-        self.ap_ax.set_xlabel("Time $\it{t}$ in seconds", fontsize=22*self.ui_scalefactor )
-        self.ap_ax.set_ylabel("Amplitude", fontsize=22*self.ui_scalefactor)
+        self.ap_ax.set_title(label="Last Recorded Audio Block", fontsize=28 * self.ui_scalefactor, fontweight='bold')
+        self.ap_ax.set_xlabel("Time $\it{t}$ in seconds", fontsize=22 * self.ui_scalefactor)
+        self.ap_ax.set_ylabel("Amplitude", fontsize=22 * self.ui_scalefactor)
         # set font size
-        self.ap_ax.tick_params(axis='both', which='major', labelsize=16*self.ui_scalefactor)
-        self.ap_ax.tick_params(axis='both', which='minor', labelsize=14*self.ui_scalefactor)
+        self.ap_ax.tick_params(axis='both', which='major', labelsize=16 * self.ui_scalefactor)
+        self.ap_ax.tick_params(axis='both', which='minor', labelsize=14 * self.ui_scalefactor)
 
         self.ap_bm = BlitManager(self.ap_fig.canvas, [self.ap_ln])
         self.fig_canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
@@ -180,7 +179,7 @@ class RecorderApp:
         elif t < 0:
             self.rec_time_text.set("-:--:--:--")
         else:
-            self.rec_time_text.set(str(datetime.timedelta(milliseconds=t*1000))[:-4])
+            self.rec_time_text.set(str(datetime.timedelta(milliseconds=t * 1000))[:-4])
 
     def _toggle_fscreen(self, event):
         """ Toggle function to enable/disable fullscreen mode."""
@@ -199,8 +198,8 @@ class RecorderApp:
             if self.ap_plotting:
                 self._update_audio_plot()
             self._set_record_time(self.audio_recorder.get_rec_time())
-        self.dt_last_update = round((time.time()-t) * 1000)
-        adjusted_t_freq = max(1, self.t_freq-self.dt_last_update)
+        self.dt_last_update = round((time.time() - t) * 1000)
+        adjusted_t_freq = max(1, self.t_freq - self.dt_last_update)
         self.window.after(adjusted_t_freq, self._update)
 
     def _start_rec(self):

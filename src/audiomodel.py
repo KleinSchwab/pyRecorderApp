@@ -2,12 +2,12 @@ import queue
 import sys
 import time
 import warnings
+from pathlib import Path
+from threading import Thread, Timer
 
+import numpy as np
 import sounddevice as sd
 import soundfile as sf
-import numpy as np
-from threading import Thread, Timer
-from pathlib import Path
 
 
 class AudioRecorder:
@@ -47,7 +47,7 @@ class AudioRecorder:
         self._playback = playback  # flag to enable audio playback
 
         # setup memory management
-        self.max_memory = max_memeory # may memory stored in Q before saving to Disk
+        self.max_memory = max_memeory  # may memory stored in Q before saving to Disk
         self._mem_size = sys.getsizeof(self._soundblock_q)
         if max_memeory >= 0:
             self._memory_thread = None
@@ -63,7 +63,7 @@ class AudioRecorder:
         # internal variables
         self._input_stream = None
         self._rec = False
-        self._default_fformat = ['wav', 'WAV'] # default file format
+        self._default_fformat = ['wav', 'WAV']  # default file format
 
         self._rectime = 0.0
         self._prev_ab = None
@@ -171,14 +171,14 @@ class AudioRecorder:
                     raise IOError('The soundfile {sf} already exists, please change the chosen sound format.'
                                   .format((str(self.filepath))))
             if self._partition:
-                fp = str(self.filepath.parent) + self.filepath.stem + '({})'.format(self._partition_ctr) +\
+                fp = str(self.filepath.parent) + self.filepath.stem + '({})'.format(self._partition_ctr) + \
                      self.filepath.suffix
                 self._partition_ctr += 1
             else:
                 fp = str(self.filepath)
             sf.write(fp, audio_data, self._samplerate, format=avaiable_format)  # writes to the new file
 
-    def start_recording(self, filepath = None, max_time: float = -1.0):
+    def start_recording(self, filepath=None, max_time: float = -1.0):
         """
         Starts the recording.
         Internally start threads for audio Stream, audio recording, (data management, time management).
@@ -226,7 +226,6 @@ class AudioRecorder:
 
         if self._stop_timer_thread is not None:
             self._stop_timer_thread.start()
-
 
     def stop_recording(self):
         """ Stops the recording and all running threads (and saves the data)."""
